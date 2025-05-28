@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "mjpc/planners/cross_entropy/planner.h"
+#include "mjpc/planners/replace_cem/planner.h"
 #include "mjpc/planners/gradient/planner.h"
 #include "mjpc/planners/ilqg/planner.h"
 #include "mjpc/planners/ilqs/planner.h"
