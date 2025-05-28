@@ -45,3 +45,5 @@ mju_copy(data->ctrl, DataAt(actions, t * nu), nu);
 mj_step(model, data);
 ```
 
+## Attention point
+This will override the actions for actuators 0 to `nf-1`, so you should ensure that the actuators are ordered correctly in the model XML file. The remaining actuators will still be controlled by the MPC controller.
