@@ -34,7 +34,8 @@ const char kPlannerNames[] =
     "iLQS\n"
     "Robust Sampling\n"
     "Cross Entropy\n"
-    "Sample Gradient";
+    "Sample Gradient\n"
+    "Replace CEM\n";
 
 // load all available planners
 std::vector<std::unique_ptr<mjpc::Planner>> LoadPlanners() {
@@ -49,6 +50,7 @@ std::vector<std::unique_ptr<mjpc::Planner>> LoadPlanners() {
       new RobustPlanner(std::make_unique<mjpc::SamplingPlanner>()));
   planners.emplace_back(new mjpc::CrossEntropyPlanner);
   planners.emplace_back(new mjpc::SampleGradientPlanner);
+  planners.emplace_back(new mjpc::ReplaceCEMPlanner);
   return planners;
 }
 
