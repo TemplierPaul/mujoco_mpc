@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MJPC_PLANNERS_CROSS_ENTROPY_PLANNER_H_
-#define MJPC_PLANNERS_CROSS_ENTROPY_PLANNER_H_
+#ifndef MJPC_PLANNERS_REPLACE_CEM_PLANNER_H_
+#define MJPC_PLANNERS_REPLACE_CEM_PLANNER_H_
 
 #include <atomic>
 #include <shared_mutex>
@@ -30,7 +30,7 @@
 
 namespace mjpc {
 
-class ReplaceCEMPlanner : public CrossEntropyPlanner {
+class ReplaceCEMPlanner : public Planner {
  public:
   // constructor
   ReplaceCEMPlanner() = default;
