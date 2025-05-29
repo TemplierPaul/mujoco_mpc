@@ -7,7 +7,14 @@ From: apptainer/base.sif
 %labels
 	Author p.templier@imperial.ac.uk
 
+%files
+	./ /workdir
+
 %post
+    cd /workdir
+    ls -a
+
+    rm -rf build
     mkdir build
     cd build
 
