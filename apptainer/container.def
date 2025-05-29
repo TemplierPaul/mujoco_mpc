@@ -1,0 +1,22 @@
+Bootstrap: localimage
+From: apptainer/base.sif
+
+%help
+	Apptainer definition file example to be used with `build_container.sh`, `shell_container.sh` and `hpc.sh`.
+
+%labels
+	Author p.templier@imperial.ac.uk
+
+%post
+    mkdir build
+    cd build
+
+    cmake .. -DCMAKE_BUILD_TYPE:STRING=Release -G Ninja -DCMAKE_C_COMPILER:STRING=clang-12 -DCMAKE_CXX_COMPILER:STRING=clang++-12 -DMJPC_BUILD_GRPC_SERVICE:BOOL=ON
+
+    cmake --build . --config=Release
+
+
+%runscript
+	# Run main
+	cd bin
+    ./mjpc
