@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "mjpc/trajectory.h"
+#include "mjpc/trajectory_replace.h"
 
 #include <algorithm>
 #include <functional>
@@ -30,7 +30,7 @@ inline constexpr double kMaxReturnValue = 1.0e6;
 }
 
 // initialize dimensions
-void Trajectory::Initialize(int dim_state, int dim_action, int dim_residual,
+void TrajectoryReplace::Initialize(int dim_state, int dim_action, int dim_residual,
                             int num_trace, int horizon) {
   this->horizon = horizon;
   this->dim_state = dim_state;
@@ -41,7 +41,7 @@ void Trajectory::Initialize(int dim_state, int dim_action, int dim_residual,
 }
 
 // allocate memory
-void Trajectory::Allocate(int T) {
+void TrajectoryReplace::Allocate(int T) {
   // states
   states.resize(dim_state * T);
 
@@ -62,7 +62,7 @@ void Trajectory::Allocate(int T) {
 }
 
 // reset memory to zeros
-void Trajectory::Reset(int T, const double* initial_repeated_action) {
+void TrajectoryReplace::Reset(int T, const double* initial_repeated_action) {
   // states
   std::fill(states.begin(), states.begin() + dim_state * T, 0.0);
 
@@ -89,7 +89,7 @@ void Trajectory::Reset(int T, const double* initial_repeated_action) {
 }
 
 // simulate model forward in time with continuous-time indexed policy
-void Trajectory::Rollout(
+void TrajectoryReplace::Rollout(
     std::function<void(double* action, const double* state, double time)>
         policy,
     const Task* task, const mjModel* model, mjData* data, const double* state,
@@ -97,7 +97,7 @@ void Trajectory::Rollout(
   NoisyRollout(policy, task, model, data, state, time, mocap, userdata,
                /*xfrc_std=*/0, /*xfrc_rate=*/1, steps);
 }
-void Trajectory::NoisyRollout(
+void TrajectoryReplace::NoisyRollout(
     std::function<void(double* action, const double* state, double time)>
         policy,
     const Task* task, const mjModel* model, mjData* data, const double* state,
@@ -221,7 +221,7 @@ void Trajectory::NoisyRollout(
 }
 
 // simulate model forward in time with discrete-time indexed policy
-void Trajectory::RolloutDiscrete(
+void TrajectoryReplace::RolloutDiscrete(
     std::function<void(double* action, const double* state, int index)>
         policy,
     const Task* task, const mjModel* model, mjData* data, const double* state,
@@ -320,7 +320,7 @@ void Trajectory::RolloutDiscrete(
 }
 
 // calculates total_return and costs
-void Trajectory::UpdateReturn(const Task* task) {
+void TrajectoryReplace::UpdateReturn(const Task* task) {
   // reset
   total_return = 0;
 

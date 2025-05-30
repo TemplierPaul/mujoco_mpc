@@ -59,7 +59,14 @@ class Planner {
 
   // return trajectory with best total return, or nullptr if no planning
   // iteration has completed
+
+  // Oscar: this will be updated by new trajectory file which inject userdata
+  // don't care about other planner. Used by replaceCEM only for now.
   virtual const Trajectory* BestTrajectory() = 0;
+
+  //// overloaded method for used by replaceCEM
+  // Not a good idea to overload method with different name as BestTrajectory() is called by agent.cc and simulate.cc
+  //virtual const TrajectoryReplace* BestTrajectoryReplace() = 0;
 
   // visualize planner-specific traces
   virtual void Traces(mjvScene* scn) = 0;

@@ -146,4 +146,4 @@ class ReplaceCEMPlanner : public Planner {
 
 }  // namespace mjpc
 
-#endif  // MJPC_PLANNERS_CROSS_ENTROPY_PLANNER_H_
+#endif  // MJPC_PLANNERS_REPLACE_CEM_PLANNER_H_

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MJPC_TRAJECTORY_H_
-#define MJPC_TRAJECTORY_H_
+#ifndef MJPC_TRAJECTORY_REPLACE_H_
+#define MJPC_TRAJECTORY_REPLACE_H_
 
 #include <functional>
 #include <vector>
@@ -28,14 +28,14 @@ inline constexpr int kMaxTrajectoryHorizon = 512;
 
 // time series of states, actions, costs, residual, times, parameters, noise,
 // traces
-class Trajectory {
+class TrajectoryReplace {
  public:
   // constructor
-  Trajectory() = default;
-  Trajectory(const Trajectory& other) = default;
-  Trajectory& operator=(const Trajectory& other) = default;
-  Trajectory(Trajectory&& other) = default;
-  Trajectory& operator=(Trajectory&& other) = default;
+  TrajectoryReplace() = default;
+  TrajectoryReplace(const TrajectoryReplace& other) = default;
+  TrajectoryReplace& operator=(const TrajectoryReplace& other) = default;
+  TrajectoryReplace(TrajectoryReplace&& other) = default;
+  TrajectoryReplace& operator=(TrajectoryReplace&& other) = default;
 
   // ----- methods -----//
 
@@ -92,4 +92,4 @@ class Trajectory {
 
 }  // namespace mjpc
 
-#endif  // MJPC_TRAJECTORY_H_
+#endif  // MJPC_TRAJECTORY_REPLACE_H_

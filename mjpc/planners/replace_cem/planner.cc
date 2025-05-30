@@ -30,7 +30,7 @@
 #include "mjpc/states/state.h"
 #include "mjpc/task.h"
 #include "mjpc/threadpool.h"
-#include "mjpc/trajectory_replace.h"
+#include "mjpc/trajectory.h"
 #include "mjpc/utilities.h"
 
 namespace mjpc {

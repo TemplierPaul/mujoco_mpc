@@ -114,6 +114,9 @@ void Trajectory::NoisyRollout(
   int nmocap = model->nmocap;
   int nuserdata = model->nuserdata;
 
+  // trajectory_replace
+  int nf = model->nuserdata / horizon;  // Number of fixed actions per step.
+
   // horizon
   horizon = steps;
 
@@ -141,6 +144,22 @@ void Trajectory::NoisyRollout(
   for (int t = 0; t < horizon - 1; t++) {
     // set action
     policy(DataAt(actions, t * nu), DataAt(states, t * dim_state), data->time);
+
+    // ================================================================
+    // updated from Paul's trajectory_replace.cc
+    // lazy hack as the return type of BestTrajectory() of the planner is Trajectory
+    // and is used in agnet.cc / simulate.cc. No need to care about other planner at the moment.
+
+    // check if nf > 0, and if so, copy the fixed actions from userdata
+    if (nf > 0) {
+      // Copy fixed actions from userdata to the action vector.
+      for (int j = 0; j < nf; ++j) {
+        DataAt(actions, t * nu)[j] = data->userdata[t * nf + j];
+      }
+    } 
+
+    // ================================================================
+
     mju_copy(data->ctrl, DataAt(actions, t * nu), nu);
 
     // apply perturbation
