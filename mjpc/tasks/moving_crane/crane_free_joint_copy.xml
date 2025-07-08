@@ -1,0 +1,98 @@
+<mujoco>
+  <option integrator="implicitfast" jacobian="sparse" solver="CG" tolerance="1e-5" >
+    <flag energy="enable" warmstart="enable"/>
+  </option>
+  <compiler autolimits="true" angle="radian"/>
+
+  <worldbody>
+    <light diffuse=".75 .75 .75" pos="0 0 10" dir="0 0 -1"/>
+    <body name="floor" pos="0 0 0.00000001" >
+         <geom type="plane" size="5 5 0.1" rgba=".7 .7 .6 1"/>
+    </body> <!-- floor-->
+    
+    <body name="base" pos="0 0 0.984" euler="0 0 0">
+     <geom name="base_geom"  type="cylinder" size="0.054 0.042 " rgba=".8 .6 .4 1" mass="0.5"/>
+    <!-- joint type="free" name="free_joint"/ -->
+    <!-- joint type="ball" name="ball_joint"/ -->
+
+      <site name="crane_base" pos="0 0 0" size="0.01" />
+
+
+      <body name="cab" pos="0 0 0.134" gravcomp="0">
+         <site name="cab_bottom" pos="0 0 -0.092" size="0.01" />
+        <joint name="slew-joint" type="hinge" axis="0 0 1" pos="0 0 -.5" limited="true" range="-1.3 1.3" armature="0.005" />
+        <geom name="cab_geom" type="box" size=".100 .128 .092" rgba=".8 .6 .4 1" mass="7.935"/>
+
+        <site name="cab_imu" pos="0 0 0" size="0.01" />
+ 
+        <body name="boom" pos="0.41 0 .18" gravcomp="0">
+        <!-- 0.18 = 14cm from luff actuator to top of the cab mount plate + half boom height-->
+          <joint name="luff-joint" type="hinge" pos="-0.41 0 -.18" axis="0 -1 0" range="0.001 1.2" limited="true" armature="0.005" />
+          <geom name="boom_geom" type="box" size="0.71 .0383 .0383" rgba=".3 .3 .3 1" contype="1" conaffinity="1" mass="5.777"/>
+          
+          <site name="boom_imu" pos="0 0 0" size="0.01" />
+
+          <site name="b_tip" pos="0.71 0 -.038" rgba="1 0 0 1" size="0.01" />
+          <body name="boom_tip" pos="0.71 0 -.038">
+            <geom name="boom_tip_geom" pos="0 0 0" type="sphere" size="0.01" rgba=".3 .3 .3 1" />
+            <joint name="boom-tip-beta-hinge" type="hinge" axis="1 0 0" damping="0.01" limited="true" range="-1.5 1.5"/>
+            <joint name="boom-tip-phi-hinge" type="hinge" axis="0 1 0" damping="0.01" limited="true" range="-1.5 1.5"/> 
+            <joint name="hoist-slider" type="slide" axis="0 0 -1" limited="true" range="0.07 0.55" ref="1.0" armature="0.00032"/>
+
+            <body name="payload_tip" pos="0 0 -1.0">
+              <geom name="p_tip_geom" type="sphere" size=".02" rgba="1 1 0 1" contype="1" conaffinity="1" mass="0.01"/>
+              <site name="p_tip" pos="0 0 0" size="0.01"/>
+              <joint name="p-tip-eta-hinge" type="hinge" axis="1 0 0" damping="0.0001" limited="true" range="-1.5 1.5"/>
+              <joint name="p-tip-sigma-hinge" type="hinge" axis="0 1 0" damping="0.0001" limited="true" range="-1.5 1.5"/> 
+
+                <body name="payload" pos="0 0 0">
+                  <!-- inertial pos="0 0 -0.13" mass="0.2" diaginertia="0.0001 0.0001 0.0001"/ -->
+                  <geom name="payload_geom" pos="0 0 -0.13" type="box" size="0.0135 0.0135 0.13" rgba=".8 .8 .8 1" contype="1" conaffinity="1" mass="0.2"/>
+                  <site name="p_cg" pos="0 0 -0.13"/>
+                </body> <!-- payload -->
+
+            </body> <!-- payload tip-->
+          </body> <!-- boom tip-->
+        </body> <!-- boom -->
+      </body> <!-- cab -->
+    </body> <!-- base -->
+
+  
+    <!-- place vicon mocap under the base of the crane, on the motion platform-->
+   <body name="vicon" mocap="true" pos="0 0 0.564">
+      <geom name="vicon_geom" type="sphere" size="0.015" rgba="1 0.7 0 1" condim="1"/>
+      <site name="vicon_marker" pos="0 0 0"/>
+    </body> <!-- vicon -->
+
+  </worldbody>
+
+  <equality>
+        <!-- weld between site1 and site2 is not supported by mjpc currently -->
+        <weld name="tracking" body1="base" body2="vicon"  active="true" solimp="0.9 0.95 0.001 0.9 6"/>
+    </equality>
+
+
+  <contact>
+        <exclude name="boom_hit_cab_in_luff" body1="cab" body2="boom"/>
+        <exclude name="payload_boom" body1="payload" body2="boom"/>
+        <exclude name="floor_payload" body1="floor" body2="payload"/>
+        <exclude name="vicon_payload" body1="vicon" body2="payload"/>
+        <exclude name="vicon_p_tip" body1="vicon" body2="payload_tip"/> 
+
+  </contact>
+
+<actuator>
+   <velocity name="slew-velocity" joint="slew-joint" kv="0.0006385" gear="100" forcerange="-68 68" ctrlrange="-120 120" />
+ <velocity name="luff-velocity" joint="luff-joint" gear="200" kv="0.11" forcerange="-68 68" ctrlrange="-105 105"/>
+  <!-- tuned hoist actuator-->
+    <!-- velocity name="hoist-velocity" joint="hoist-slider" ctrlrange="-0.295 0.295" kv="2500" lengthrange="0.1 0.3"/ -->
+</actuator>
+
+
+<!-- include file="motion_platform.xml" / -->
+<!-- sensor>
+<force name="btip_force"  site="b_tip"/>
+</sensor -->
+
+
+</mujoco>
