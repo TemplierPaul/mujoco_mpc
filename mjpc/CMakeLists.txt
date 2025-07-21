@@ -84,6 +84,8 @@ add_library(
   tasks/swimmer/swimmer.h
   tasks/walker/walker.cc
   tasks/walker/walker.h
+  tasks/plsim_crane/plsim_crane.cc
+  tasks/plsim_crane/plsim_crane.h
   planners/planner.cc
   planners/planner.h
   planners/policy.h
