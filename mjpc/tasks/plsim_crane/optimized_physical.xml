@@ -1,8 +1,5 @@
 <mujoco>
   <option integrator="implicit"/>
-  <asset>
-    <texture name="skybox" type="skybox" builtin="gradient" rgb1="1 1 1" rgb2=".6 .6 .8" width="800" height="800"/>
-  </asset>
   <worldbody>
     <light diffuse=".75 .75 .75" pos="0 0 10" dir="0 0 -1" castshadow="false"/>
     <geom type="plane" size="5 5 0.1" rgba=".7 .7 .6 1"/>
@@ -70,29 +67,14 @@
       <velocity name="luff-velocity" joint="luff-joint" ctrlrange="-.2618 .2618" kv="136228.878"/>
       <velocity name="hoist-velocity" joint="hoist-slider" ctrlrange="-.8 .8" kv="962.107008"/>
 
-      <position name="platform-x-position" joint="platform-x-slider" kp="1000" kv="500"/>
-      <position name="platform-y-position" joint="platform-y-slider" kp="1000" kv="500"/>
-      <position name="platform-z-position" joint="platform-z-slider" kp="1000" kv="500"/>
-      <position name="platform-x-rot" joint="platform-x-hinge" kp="5000" kv="500"/>
-      <position name="platform-y-rot" joint="platform-y-hinge" kp="5000" kv="500"/>
-      <position name="platform-z-rot" joint="platform-z-hinge" kp="5000" kv="500"/>
+      <position name="platform-x-position" joint="platform-x-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-y-position" joint="platform-y-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-z-position" joint="platform-z-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-x-rot" joint="platform-x-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-y-rot" joint="platform-y-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-z-rot" joint="platform-z-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
   </actuator>
   
-  <sensor>
-    <framepos name="payload_position" objtype="site" objname="payload_center"/>
-    <framequat name="payload_orientation" objtype="site" objname="payload_center"/>
-    <framelinvel name="payload_linear_velocity" objtype="site" objname="payload_center"/>
-    <frameangvel name="payload_angular_velocity" objtype="site" objname="payload_center"/>
 
-    <framequat name="cab_angular_orientation" objtype="site" objname="cab_imu"/>
-    <frameangvel name="cab_angular_velocity" objtype="site" objname="cab_imu"/>
-
-    <framequat name="boom_angular_orientation" objtype="site" objname="boom_imu"/>
-    <frameangvel name="boom_angular_velocity" objtype="site" objname="boom_imu"/>
-
-    <framepos name="boom_tip_position" objtype="site" objname="boom_tip_site"/>
-    <framequat name="base_angular_orientation" objtype="site" objname="base_imu"/>
-    <frameangvel name="base_angular_velocity" objtype="site" objname="base_imu"/>
-  </sensor>
 
 </mujoco>

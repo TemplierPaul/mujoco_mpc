@@ -1,4 +1,4 @@
-<mujoco model="IC Single Crane">
+<mujoco model="PLSim Crane">
   <include file="../common.xml"/>
   <include file="optimized_physical.xml" />
 
@@ -38,9 +38,9 @@
 
   <worldbody>
 
-    <body name="target_marker" pos="2.363 0 1.23" mocap="true">
+    <!-- body name="target_marker" pos="2.363 0 1.23" mocap="true">
       <site size=".05" rgba="0 1 0 .25"/>
-    </body>
+    </body -->
     
   </worldbody>
 
@@ -86,6 +86,8 @@
     <frameangvel name="boom_angular_velocity" objtype="site" objname="boom_imu"/>
 
     <framepos name="boom_tip_position" objtype="site" objname="boom_tip_site"/>
+    <framequat name="base_angular_orientation" objtype="site" objname="base_imu"/>
+    <frameangvel name="base_angular_velocity" objtype="site" objname="base_imu"/>
 
   </sensor>
 
