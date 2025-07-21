@@ -22,6 +22,8 @@
 
 #include <mujoco/mujoco.h>
 #include "mjpc/norm.h"
+#include "mjpc/states/state.h"
+
 
 namespace mjpc {
 
@@ -101,6 +103,11 @@ class Task {
   // calls TransitionLocked and InternalResidual()->Update() while holding a
   // lock
   void Transition(mjModel* model, mjData* data);
+
+  //////////////////// Updated on 10 Mar 2025 /////////////////////////
+  // modify state
+  virtual void ModifyState(const mjModel* model, State* state){};
+  //////////////////////////////////////////////////////////////////////
 
   // get information from model
   // calls ResetLocked and InternalResidual()->Update() while holding a lock
