@@ -47,11 +47,12 @@ ABSL_FLAG(bool, estimator_enabled, false,
           "If true, estimator loop will run on startup");
 ABSL_FLAG(bool, show_left_ui, true,
           "If true, the left UI (ui0) will be visible on startup");
-ABSL_FLAG(bool, show_plot, true,
+ABSL_FLAG(bool, show_plot, false,
           "If true, the plots will be visible on startup");
 ABSL_FLAG(bool, show_info, true,
           "If true, the infotext panel will be visible on startup");
-
+ABSL_FLAG(bool, modify_state, false,
+          "If true, the state of the sim will be modified at the end of the physics loop");
 
 namespace {
 namespace mj = ::mujoco;
@@ -380,6 +381,13 @@ void PhysicsLoop(mj::Simulate& sim) {
       // set ground truth state if no active estimator
       if (!sim.agent->ActiveEstimatorIndex() || !sim.agent->estimator_enabled) {
         sim.agent->state.Set(m, d);
+
+        // modify state during sim
+        if (absl::GetFlag(FLAGS_modify_state) == 1){
+          sim.agent->ActiveTask()->ModifyState(m, &sim.agent->state);
+        }
+
+
       }
     }
   }
@@ -469,6 +477,7 @@ void MjpcApp::Start() {
   printf("    planning     :  %i\n", sim->agent->planner_threads());
   printf("  Estimator      :  %i\n", sim->agent->estimator_threads());
   printf("    estimation   :  %i\n", sim->agent->estimator_enabled);
+  printf("  ModifyState    :  %i\n", absl::GetFlag(FLAGS_modify_state));
 
   // set control callback
   mjcb_control = controller;

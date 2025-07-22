@@ -1,0 +1,104 @@
+<mujoco model="PLSim Crane">
+  <include file="../common.xml"/>
+  <include file="optimized_physical.xml" />
+
+  <!-- set userdata =model.nv+model.nq for storeing qpos and qvel from ROS-->
+  <!-- add three more userdata for payload tip x, y z acc, i.e. 14+3 -->
+  <size memory="1M" nuserdata="17"/>
+
+  <custom>
+    <!-- agent -->
+    <!-- 0: predictive sampling 5: CEM -->
+    <numeric name="agent_planner" data="5" />
+    <numeric name="agent_horizon" data="0.8" /> <!-- 0.6-->
+    <numeric name="agent_timestep" data="0.01" />
+    <numeric name="agent_policy_width" data="0.0035" />
+    <numeric name="sampling_spline_points" data="4" />
+    <numeric name="sampling_exploration" data="0.1" />
+    <numeric name="sampling_trajectories" data="20" />
+    <numeric name="sampling_representation" data="0" />
+    <!-- parameter -->
+    <!-- numeric name="residual_ViconX" data="1.12 -1.5 1.5" />
+    <numeric name="residual_ViconY" data="0 -1.5 1.5" />
+    <numeric name="residual_ViconZ" data="0.936 0.0 2.0" / -->
+    <numeric name="residual_GoalX" data="2.363 -2.5 2.5" />
+    <numeric name="residual_GoalY" data="0 -2.5 2.5" />
+    <numeric name="residual_GoalZ" data="1.23 -2 2" />
+    <!-- numeric name="residual_select_Modify State" data="0"/> 
+    <text name="residual_list_Modify State" data="No|Yes"/ -->
+    <!-- estimator -->
+    <!-- cause serious rollout divergence -->
+    <numeric name="estimator" data="0" />
+    <numeric name="estimator_sensor_start" data="4" />
+    <numeric name="estimator_number_sensor" data="1" />
+    <numeric name="estimator_timestep" data="0.004" />
+
+
+  </custom>
+
+  <worldbody>
+
+    <!-- body name="target_marker" pos="2.363 0 1.23" mocap="true">
+      <site size=".05" rgba="0 1 0 .25"/>
+    </body -->
+    
+  </worldbody>
+
+  <contact>
+        <exclude name="target_hit_paylaod" body1="target_marker" body2="payload"/>
+        <exclude name="target_hit_boom" body1="target_marker" body2="boom"/>
+  </contact>
+
+  <sensor>
+    <!-- cost -->
+    <user name="Distance" dim="1" user="2 1200 0 5000 0.04" />
+    <user name="Sway_Angle" dim="1" user="2 4800 500 8000 0.04"/>
+     <user name="KE" dim="1" user="2 0 0 100 0.04"/>
+    <user name="Control" dim="2" user="0 20 0.0 100.0"/>  
+
+    <!-- estimator sensor-->
+    <jointpos name="4" joint="hoist-slider"/>
+    <!-- jointvel name="5" joint="p-tip-eta-hinge"/>
+    <jointvel name="6" joint="p-tip-sigma-hinge"/ -->
+
+    <!-- trace -->
+    <framepos name="trace0" objtype="site" objname="payload_center"/>
+
+    <!-- residual -->
+    <!-- force name="btip_force"  site="b_tip"/>
+    <force name="btip_torque"  site="b_tip"/>
+    <framepos name="b_tip_pos" objtype="site" objname="b_tip"/>
+    <framelinvel name="boom_vel" objtype="site" objname="b_tip"/>
+    <framequat name="b_tip_quat" objtype="site" objname="p_cg"/>
+    <framepos name="p_pos" objtype="site" objname="p_cg"/>
+    <framepos name="p_tip" objtype="site" objname="p_tip"/>
+    <framelinacc name="p_acc" objtype="body" objname="payload"/ --> 
+
+    <framepos name="payload_position" objtype="site" objname="payload_center"/>
+    <framequat name="payload_orientation" objtype="site" objname="payload_center"/>
+    <framelinvel name="payload_linear_velocity" objtype="site" objname="payload_center"/>
+    <frameangvel name="payload_angular_velocity" objtype="site" objname="payload_center"/>
+
+    <framequat name="cab_angular_orientation" objtype="site" objname="cab_imu"/>
+    <frameangvel name="cab_angular_velocity" objtype="site" objname="cab_imu"/>
+
+    <framequat name="boom_angular_orientation" objtype="site" objname="boom_imu"/>
+    <frameangvel name="boom_angular_velocity" objtype="site" objname="boom_imu"/>
+
+    <framepos name="boom_tip_position" objtype="site" objname="boom_tip_site"/>
+    <framequat name="base_angular_orientation" objtype="site" objname="base_imu"/>
+    <frameangvel name="base_angular_velocity" objtype="site" objname="base_imu"/>
+
+  </sensor>
+
+    <!-- good planner parameter for laptop -->
+    <!-- numeric name="agent_planner" data="0" />
+    <numeric name="agent_horizon" data="0.9" />
+    <numeric name="agent_timestep" data="0.004" />
+    <numeric name="agent_policy_width" data="0.0035" />
+    <numeric name="sampling_spline_points" data="6" />
+    <numeric name="sampling_exploration" data="0.1" />
+    <numeric name="sampling_trajectories" data="30" />
+    <numeric name="sampling_representation" data="0" / -->
+
+</mujoco>

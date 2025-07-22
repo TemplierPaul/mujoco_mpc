@@ -1,0 +1,80 @@
+<mujoco>
+  <option integrator="implicit"/>
+  <worldbody>
+    <light diffuse=".75 .75 .75" pos="0 0 10" dir="0 0 -1" castshadow="false"/>
+    <geom type="plane" size="5 5 0.1" rgba=".7 .7 .6 1"/>
+    
+    <body name="base" pos="0 0 1.5" euler="0 0 0" gravcomp="1">
+      <site name="base_imu" pos="0 0 0" size="0.01"/>
+      <joint name="platform-x-slider" type="slide" axis="1 0 0"/>
+      <joint name="platform-y-slider" type="slide" axis="0 1 0"/>
+      <joint name="platform-z-slider" type="slide" axis="0 0 1" ref="1.5"/>
+      <joint name="platform-x-hinge" type="hinge" axis="1 0 0"/>
+      <joint name="platform-y-hinge" type="hinge" axis="0 1 0"/>
+      <joint name="platform-z-hinge" type="hinge" axis="0 0 1"/>
+
+      <geom name="base_geom" type="box" size="1 1 .01" rgba=".6 .6 .6 1"/>
+
+      <body name="cab" pos="0.0 -0.01 0.216" gravcomp="1">
+        <joint name="slew-joint" type="hinge" axis="0 0 1" pos="0 0 -.5" stiffness="0" damping="2.97258206" frictionloss="0" armature="129.825003"/>
+        <geom name="cab_geom" type="box" size=".1015 .1015 .0825" rgba=".8 .6 .4 1" mass="7.935"/>
+
+        <site name="cab_imu" pos="0 0 0" size="0.01"/>
+ 
+        <body name="boom" pos="1.125 0 0.205" gravcomp="1">
+          <joint name="luff-joint" type="hinge" pos="-1.125 0 -0.205" axis="0 -1 0" range="0 70" stiffness="0" damping="0.0241868441" frictionloss="0" armature="22553.9006"/>
+          <geom name="boom_geom" type="box" size="1.259 0.038 0.038" rgba=".3 .3 .3 1" mass="5.777"/>
+          
+          <site name="boom_imu" pos="0 0 0" size="0.01"/>
+
+          <site name="boom_tip_site" pos="1.259 0 -0.038" size="0.01"/>
+          <body name="boom_tip" pos="1.259 0 -0.038" gravcomp="1">
+            <joint name="boom-tip-x-rot-hinge" type="hinge" axis="1 0 0" stiffness="0" damping="7.050e-04" frictionloss="0" armature="0.0"/>
+            <joint name="boom-tip-y-rot-hinge" type="hinge" axis="0 1 0" stiffness="0" damping="7.050e-04" frictionloss="0" armature="0.0"/>
+            <joint name="hoist-slider" type="slide" axis="0 0 -1" limited="true" range="0 2" stiffness="0" damping="0.0" frictionloss="0" armature="46.9666336"/>
+
+            <body name="payload_connector" pos="0 0 -.0535">
+              <geom name="payload_connector_geom" type="sphere" size="0.01" rgba=".3 0 0 1" mass="0.0000000001" contype="0" conaffinity="0"/>
+
+              <body name="payload">
+                <geom name="payload_geom" pos="0 0 -0.2286" type="cylinder" size="0.0254 0.2286" rgba="1 1 1 1" mass=".245"/>
+
+                <site name="payload_top" pos="0 0 0" size="0.01" rgba="1 0 0 1"/>
+                <site name="payload_center" pos="0 0 -0.2286" size="0.01" rgba="0 0 1 1"/>
+                <site name="payload_bottom" pos="0 0 -0.4572" size="0.01" rgba="0 1 0 1"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <site name="cab_bottom" pos="0.0 -0.01 0" size="0.01" rgba="1 0 0 1"/>
+
+      <body name="target_marker" pos="0 0 0">
+        <site size=".05" rgba="0 1 0 .25"/>
+      </body>
+
+    </body>
+
+    <body name="goal_marker" pos="0 0 0" mocap="true">
+      <site size=".05" rgba="0 0 1 .25"/>
+    </body>
+
+  </worldbody>
+
+  <actuator>
+      <velocity name="slew-velocity" joint="slew-joint" ctrlrange="-.7854 .7854" kv="2999.75774"/>
+      <velocity name="luff-velocity" joint="luff-joint" ctrlrange="-.2618 .2618" kv="136228.878"/>
+      <velocity name="hoist-velocity" joint="hoist-slider" ctrlrange="-.8 .8" kv="962.107008"/>
+
+      <position name="platform-x-position" joint="platform-x-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-y-position" joint="platform-y-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-z-position" joint="platform-z-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-x-rot" joint="platform-x-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-y-rot" joint="platform-y-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-z-rot" joint="platform-z-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+  </actuator>
+  
+
+
+</mujoco>
