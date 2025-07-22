@@ -139,6 +139,7 @@ void TrajectoryReplace::NoisyRollout(
   data->time = time;
 
   absl::BitGen gen;
+  int action_index = 0;  // Index for the action vector.
 
   for (int t = 0; t < horizon - 1; t++) {
     // set action
@@ -148,7 +149,8 @@ void TrajectoryReplace::NoisyRollout(
     if (nf > 0) {
       // Copy fixed actions from userdata to the action vector.
       for (int j = 0; j < nf; ++j) {
-        DataAt(actions, t * nu)[j] = data->userdata[t * nf + j];
+        action_index = nu - nf + j;  // Adjust index to the end of the action vector.
+        DataAt(actions, t * nu)[action_index] = data->userdata[t * nf + j];
       }
     } 
 

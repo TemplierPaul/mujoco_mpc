@@ -34,3 +34,5 @@ MJMODEL.TXT
 # Python
 python/dist/
 *.sif
+apptainer/tmp/*
+apptainer/var_tmp/*
