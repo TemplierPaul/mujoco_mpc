@@ -96,30 +96,6 @@ void PLSim_Crane::TransitionLocked(mjModel* model, mjData* data) {
     mju_copy(qvel, data->userdata+model->nq, model->nv);
     mju_copy(residual_.ptip_acc, data->userdata+model->nq+model->nv, 3); 
     
-    // test applying external force
-    // 1. Get payload mass
-    mjtNum mass = model->body_mass[7];
-    
-    // 2. Calculate force from F = m*a
-    mjtNum force[3];
-    mju_scl3(force, residual_.ptip_acc, mass);
-        
-    // 3. Get current payload position
-    const mjtNum* payload_pos = data->xipos + 3*7;
-        
-    // 4. Create a temporary buffer for joint forces
-    mjtNum* temp_qfrc = (mjtNum*)mju_malloc(sizeof(mjtNum) * model->nv);
-    mju_zero(temp_qfrc, model->nv);
-        
-    // 5. Convert body force to joint forces (no torque applied)
-    mjtNum zero_torque[3] = {0, 0, 0};
-    mj_applyFT(model, data, force, zero_torque, payload_pos, 7, temp_qfrc);
-        
-    // 6. Add computed forces to applied forces
-    mju_add(data->qfrc_applied, data->qfrc_applied, temp_qfrc, model->nv);
-
-    //printf("acceleration force: %.4f   %.4f   %.4f  \n", temp_qfrc[0], temp_qfrc[1], temp_qfrc[2]);
-    mju_free(temp_qfrc);
 }
 
 void PLSim_Crane::ModifyState(const mjModel* model, State* state) {

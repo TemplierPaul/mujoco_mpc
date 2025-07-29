@@ -86,6 +86,8 @@ add_library(
   tasks/walker/walker.h
   tasks/plsim_crane/plsim_crane.cc
   tasks/plsim_crane/plsim_crane.h
+  tasks/ic_single_crane/ic_single_crane.cc
+  tasks/ic_single_crane/ic_single_crane.h
   planners/planner.cc
   planners/planner.h
   planners/policy.h

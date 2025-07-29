@@ -9,7 +9,7 @@
   <custom>
     <!-- agent -->
     <!-- 0: predictive sampling 5: CEM -->
-    <numeric name="agent_planner" data="5" />
+    <numeric name="agent_planner" data="0" />
     <numeric name="agent_horizon" data="0.8" /> <!-- 0.6-->
     <numeric name="agent_timestep" data="0.01" />
     <numeric name="agent_policy_width" data="0.0035" />
@@ -63,6 +63,7 @@
 
     <!-- trace -->
     <framepos name="trace0" objtype="site" objname="payload_center"/>
+    <framepos name="trace1" objtype="site" objname="boom_imu"/>
 
     <!-- residual -->
     <!-- force name="btip_force"  site="b_tip"/>

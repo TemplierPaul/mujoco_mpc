@@ -4,7 +4,7 @@
 
   <!-- set userdata =model.nv+model.nq for storeing qpos and qvel from ROS-->
   <!-- add three more userdata for payload tip x, y z acc, i.e. 14+3 -->
-  <size memory="1M" nuserdata="17"/>
+  <size memory="1M" nuserdata="480"/>
 
   <custom>
     <!-- agent -->
@@ -63,6 +63,7 @@
 
     <!-- trace -->
     <framepos name="trace0" objtype="site" objname="payload_center"/>
+    <framepos name="trace1" objtype="site" objname="mp_front"/>
 
     <!-- residual -->
     <!-- force name="btip_force"  site="b_tip"/>
