@@ -1,0 +1,90 @@
+ <mujoco>
+  <option integrator="implicitfast" timestep="0.01">
+    <flag energy="enable" warmstart="enable" contact="disable"/>
+  </option>
+
+  <compiler autolimits="true" angle="radian"/>
+
+  <worldbody>
+    <light diffuse=".75 .75 .75" pos="0 0 10" dir="0 0 -1" castshadow="false"/>
+    <!-- geom type="plane" size="5 5 0.1" rgba=".7 .7 .6 1"/ -->
+     <!-- Dummy body to hold platform joints used only by actuators -->
+    <body name="platform_dummy" pos="1000 1000 1000" mocap="false">
+      <joint name="platform-x-slider" type="slide" axis="1 0 0"/>
+      <joint name="platform-y-slider" type="slide" axis="0 1 0"/>
+      <joint name="platform-z-slider" type="slide" axis="0 0 1" ref="1.5"/>
+      <joint name="platform-x-hinge" type="hinge" axis="1 0 0"/>
+      <joint name="platform-y-hinge" type="hinge" axis="0 1 0"/>
+      <joint name="platform-z-hinge" type="hinge" axis="0 0 1"/>
+    </body>
+
+    <body name="base" pos="0 0 0.572" euler="0 0 0" gravcomp="1" >
+      <site name="base_imu" pos="0 0 0" size="0.01" />
+
+     <geom name="base_geom"  type="cylinder" size="0.054 0.042 " rgba=".8 .6 .4 1" mass="6.0"/>
+
+      <body name="cab" pos="0 0 0.134" gravcomp="1">
+        <joint name="slew-joint" type="hinge" axis="0 0 1" pos="0 0 -.092" range="-1.3 1.3" armature="0.0" damping="0.0"/>
+        <geom name="cab_geom" type="box" size=".100 .128 .092" rgba=".8 .6 .4 1" mass="7.8"/>
+
+        <site name="cab_imu" pos="0 0 0" size="0.01" />
+ 
+        <body name="boom" pos="1.0347 0 .179" gravcomp="1">
+          <joint name="luff-joint" type="hinge" pos="-1.0392 0 -.179" axis="0 -1 0" range="0.001 1.2" armature="7110.0" damping="0.4454"/>
+          <geom name="boom_geom" type="box" size="1.3017 .039 .039" rgba=".3 .3 .3 1"  mass="1.834"/>
+          <geom name="front_pulley_geom" pos="1.3017 0 0" type="sphere" size="0.04" rgba="0 .5 .5 1" mass="0.380"/>
+          <site name="boom_imu" pos="0 0 0" size="0.01" />  
+            <!-- body name="hoist_module" pos="-1.13 0 0" gravcomp="1">
+              <geom name="hoist_module_geom" pos="0 0 0" type="sphere" size="0.01" rgba="0 0 0 1" mass="0.0001"/>
+            </body --> <!-- hoist_module -->
+          <site name="b_tip" pos="1.3017 0 -.039" rgba="1 0 0 1" size="0.01" />
+
+          <body name="boom_tip" pos="1.3017 0 -.039" gravcomp="1">
+            <geom name="boom_tip_geom" pos="0 0 0" type="sphere" size="0.01" rgba=".3 .3 .3 1" mass="0.00001"/>
+            
+
+            <joint name="boom-tip-beta-hinge" type="hinge" axis="1 0 0" range="-1.5 1.5" damping="0.3014" armature="6.061e-11"/>
+            <joint name="boom-tip-phi-hinge" type="hinge" axis="0 1 0" range="-1.5 1.5" damping="0.3014" armature="6.061e-11"/>
+            <joint name="hoist-slider" type="slide" axis="0 0 -1" range="0.07 2.0" armature="144.1" damping="1.373e-15"/>
+
+            <body name="payload_tip" pos="0 0 -.0535">
+              <geom name="p_tip_geom" type="sphere" size="0.01" rgba=".3 0 0 1" mass="0.0000000001" contype="0" conaffinity="0"/>
+              <site name="p_tip" pos="0 0 0" size="0.01" rgba="1 0 0 1" />
+
+              <joint name="p-tip-eta-hinge" type="hinge" axis="1 0 0" damping="0.0001" limited="true" range="-1.5 1.5"/>
+              <joint name="p-tip-sigma-hinge" type="hinge" axis="0 1 0" damping="0.0001" limited="true" range="-1.5 1.5"/> 
+
+              <body name="payload" pos="0 0 0">
+                <geom name="payload_geom" pos="0 0 -0.125" type="cylinder" size="0.025 0.125" rgba=".8 .8 .8 1" mass="0.2"/>
+                <site name="p_cg" pos="0 0 -0.125"/>
+                                <!-- site name="payload_bottom" pos="0 0 -0.4572" size="0.01" rgba="0 1 0 1" / -->
+              </body> <!-- payload -->
+            </body> <!-- paylaod connector -->
+          </body> <!-- boom tip -->
+        </body> <!-- boom -->
+      </body> <!-- cab -->
+
+    </body> <!-- base -->
+
+    <!-- place vicon mocap under the base of the crane, on the motion platform-->
+   <body name="vicon" mocap="true" pos="2 2 0.564">
+      <geom name="vicon_geom" type="sphere" size="0.015" rgba="1 0.7 0 1" condim="1"/>
+      <site name="vicon_marker" pos="0 0 0"/>
+    </body> <!-- vicon -->
+
+  </worldbody>
+
+  <actuator>
+      <velocity name="slew-velocity" joint="slew-joint" ctrlrange="-.7854 .7854" kv="3000.0"/>
+      <velocity name="luff-velocity" joint="luff-joint" ctrlrange="-.2618 .2618" kv="14020.0"/>
+      <velocity name="hoist-velocity" joint="hoist-slider" ctrlrange="-.8 .8" kv="586.0"/>
+
+      <position name="platform-x-position" joint="platform-x-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-y-position" joint="platform-y-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-z-position" joint="platform-z-slider" ctrlrange="-1 1" kp="1000" kv="500"/>
+      <position name="platform-x-rot" joint="platform-x-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-y-rot" joint="platform-y-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+      <position name="platform-z-rot" joint="platform-z-hinge" ctrlrange="-1 1" kp="5000" kv="500"/>
+  </actuator>
+  
+</mujoco>
