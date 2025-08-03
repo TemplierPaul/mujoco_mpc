@@ -151,12 +151,15 @@ void Trajectory::NoisyRollout(
     // and is used in agnet.cc / simulate.cc. No need to care about other planner at the moment.
 
     // check if nf > 0, and if so, copy the fixed actions from userdata
+    // check if nf > 0, and if so, copy the fixed actions from userdata
     if (nf > 0) {
       // Copy fixed actions from userdata to the action vector.
       for (int j = 0; j < nf; ++j) {
-        DataAt(actions, t * nu)[j] = data->userdata[t * nf + j];
+        //DataAt(actions, t * nu)[j] = data->userdata[t * nf + j];
+        int action_index = nu - nf + j;  // Adjust index to the end of the action vector.
+        DataAt(actions, t * nu)[action_index] = data->userdata[t * nf + j];
       }
-    } 
+    }
 
     // ================================================================
 

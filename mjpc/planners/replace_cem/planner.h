@@ -88,7 +88,7 @@ class ReplaceCEMPlanner : public Planner {
 
   // return number of parameters optimized by planner
   int NumParameters() override {
-    return policy.num_spline_points * policy.model->nu;
+    return policy.num_spline_points * 3; //policy.model->nu; // use 3 actuators only
   };
 
   // ----- members ----- //

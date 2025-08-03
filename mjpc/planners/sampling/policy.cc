@@ -36,7 +36,7 @@ void SamplingPolicy::Allocate(const mjModel* model, const Task& task,
   num_spline_points = GetNumberOrDefault(kMaxTrajectoryHorizon, model,
                                          "sampling_spline_points");
 
-  plan = TimeSpline(/*dim=*/model->nu);
+  plan = TimeSpline(/*dim=*/3);
   plan.Reserve(num_spline_points);
 }
 
@@ -44,7 +44,10 @@ void SamplingPolicy::Allocate(const mjModel* model, const Task& task,
 void SamplingPolicy::Reset(int horizon, const double* initial_repeated_action) {
   plan.Clear();
   if (initial_repeated_action != nullptr) {
-    plan.AddNode(0, absl::MakeConstSpan(initial_repeated_action, model->nu));
+    double reduced_action[3] = {initial_repeated_action[0], 
+                                initial_repeated_action[1],
+                                initial_repeated_action[2]};
+    plan.AddNode(0, absl::MakeConstSpan(reduced_action, 3));
   }
 }
 
@@ -52,10 +55,21 @@ void SamplingPolicy::Reset(int horizon, const double* initial_repeated_action) {
 void SamplingPolicy::Action(double* action, const double* state,
                             double time) const {
   CHECK(action != nullptr);
-  plan.Sample(time, absl::MakeSpan(action, model->nu));
+  double temp_action[3];
+
+  //printf(">>> in sampling action, dim = %i size = %zu\n", plan.Dim(), plan.Size());
+  plan.Sample(time, absl::MakeSpan(action, 3));
+
+  action[0] = temp_action[0];  // slew
+  action[1] = temp_action[1];  // luff
+  action[2] = temp_action[2];  // hoist
 
   // Clamp controls
-  Clamp(action, model->actuator_ctrlrange, model->nu);
+  //Clamp(action, model->actuator_ctrlrange, model->nu);
+  action[0] = mju_clip(action[0], model->actuator_ctrlrange[0], model->actuator_ctrlrange[1]);
+  action[1] = mju_clip(action[1], model->actuator_ctrlrange[2], model->actuator_ctrlrange[3]);
+  action[2] = mju_clip(action[2], model->actuator_ctrlrange[4], model->actuator_ctrlrange[5]);
+
 }
 
 // copy policy

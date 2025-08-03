@@ -88,10 +88,10 @@ void SamplingPlanner::Allocate() {
   // policy
   policy.Allocate(model, *task, kMaxTrajectoryHorizon);
   previous_policy.Allocate(model, *task, kMaxTrajectoryHorizon);
-  plan_scratch = TimeSpline(/*dim=*/model->nu);
+  plan_scratch = TimeSpline(/*dim=*/3); // change to 3 actuators - slew luff hoist
 
   // noise
-  noise.resize(kMaxTrajectory * (model->nu * kMaxTrajectoryHorizon));
+  noise.resize(kMaxTrajectory * (3* kMaxTrajectoryHorizon));  //  change to 3 actuators
 
   // trajectory and parameters
   winner = -1;
@@ -338,13 +338,19 @@ void SamplingPlanner::AddNoiseToPolicy(double start_time, int i) {
   }
 
   for (const TimeSpline::Node& node : candidate_policy[i].plan) {
-    for (int k = 0; k < model->nu; k++) {
+    for (int k = 0; k < 3; k++) {
       double scale = 0.5 * (model->actuator_ctrlrange[2 * k + 1] -
                             model->actuator_ctrlrange[2 * k]);
       double noise = absl::Gaussian<double>(gen_, 0.0, scale * std);
       node.values()[k] += noise;
     }
-    Clamp(node.values().data(), model->actuator_ctrlrange, model->nu);
+    //Clamp(node.values().data(), model->actuator_ctrlrange, model->nu);
+    // Clamp only the first 3 actuators
+    for (int k = 0; k < 3; k++) {
+      node.values()[k] = mju_clip(node.values()[k], 
+                                 model->actuator_ctrlrange[2 * k],
+                                 model->actuator_ctrlrange[2 * k + 1]);
+    }
   }
 
   // end timer

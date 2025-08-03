@@ -94,7 +94,7 @@ class SamplingPlanner : public RankedPlanner {
 
   // return number of parameters optimized by planner
   int NumParameters() override {
-    return policy.num_spline_points * model->nu;
+    return policy.num_spline_points * 3; // model->nu; // 3 actuators
   };
 
   // optimizes policies, but rather than picking the best, generate up to

@@ -86,7 +86,7 @@ void ReplaceCEMPlanner::Allocate() {
   userdata.resize(model->nuserdata);
 
   // policy
-  int num_max_parameter = model->nu * kMaxTrajectoryHorizon;
+  int num_max_parameter = 3 * kMaxTrajectoryHorizon; // 3 actuators
   policy.Allocate(model, *task, kMaxTrajectoryHorizon);
   resampled_policy.Allocate(model, *task, kMaxTrajectoryHorizon);
   previous_policy.Allocate(model, *task, kMaxTrajectoryHorizon);
@@ -96,10 +96,10 @@ void ReplaceCEMPlanner::Allocate() {
   times_scratch.resize(kMaxTrajectoryHorizon);
 
   // noise
-  noise.resize(kMaxTrajectory * (model->nu * kMaxTrajectoryHorizon));
+  noise.resize(kMaxTrajectory * (3 * kMaxTrajectoryHorizon)); // 3 actuators only
 
   // variance
-  variance.resize(model->nu * kMaxTrajectoryHorizon);  // (nu * horizon)
+  variance.resize(3 * kMaxTrajectoryHorizon);  // (nu * horizon) // 3 actuators only
 
   // need to initialize an arbitrary order of the trajectories
   trajectory_order.resize(kMaxTrajectory);
@@ -109,12 +109,12 @@ void ReplaceCEMPlanner::Allocate() {
 
   // trajectories and parameters
   for (int i = 0; i < kMaxTrajectory; i++) {
-    trajectory[i].Initialize(num_state, model->nu, task->num_residual,
+    trajectory[i].Initialize(num_state, 3, task->num_residual, // 3 actuators
                              task->num_trace, kMaxTrajectoryHorizon);
     trajectory[i].Allocate(kMaxTrajectoryHorizon);
     candidate_policy[i].Allocate(model, *task, kMaxTrajectoryHorizon);
   }
-  nominal_trajectory.Initialize(num_state, model->nu, task->num_residual,
+  nominal_trajectory.Initialize(num_state, 3, task->num_residual, // 3 actuators
                                 task->num_trace, kMaxTrajectoryHorizon);
   nominal_trajectory.Allocate(kMaxTrajectoryHorizon);
 }
@@ -221,7 +221,7 @@ void ReplaceCEMPlanner::OptimizePolicy(int horizon, ThreadPool& pool) {
 
   // dimensions
   int num_spline_points = resampled_policy.num_spline_points;
-  int num_parameters = num_spline_points * model->nu;
+  int num_parameters = num_spline_points * 3; //model->nu; // 3 actuators
 
   // averaged return over elites
   double avg_return = 0.0;
@@ -238,8 +238,8 @@ void ReplaceCEMPlanner::OptimizePolicy(int horizon, ThreadPool& pool) {
     // add parameters
     for (int t = 0; t < num_spline_points; t++) {
       TimeSpline::ConstNode n = elite_plan.NodeAt(t);
-      for (int j = 0; j < model->nu; j++) {
-        parameters_scratch[t * model->nu + j] += n.values()[j];
+      for (int j = 0; j < 3; j++) {                      // 3 actuators
+        parameters_scratch[t * 3 + j] += n.values()[j]; // 3 actuators
       }
     }
 
@@ -259,14 +259,14 @@ void ReplaceCEMPlanner::OptimizePolicy(int horizon, ThreadPool& pool) {
     const TimeSpline& elite_plan = candidate_policy[idx].plan;
     for (int t = 0; t < num_spline_points; t++) {
       TimeSpline::ConstNode n = elite_plan.NodeAt(t);
-      for (int j = 0; j < model->nu; j++) {
+      for (int j = 0; j < 3; j++) {                   // 3 actuators
         // average
-        double p_avg = parameters_scratch[t * model->nu + j];
+        double p_avg = parameters_scratch[t * 3 + j]; // 3 actuators
 
         // candidate parameter
         double pi = n.values()[j];
         double diff = pi - p_avg;
-        variance[t * model->nu + j] += diff * diff / (n_elite - 1);
+        variance[t * 3 + j] += diff * diff / (n_elite - 1); // 3 actuators
       }
     }
   }
@@ -278,8 +278,8 @@ void ReplaceCEMPlanner::OptimizePolicy(int horizon, ThreadPool& pool) {
     policy.plan.SetInterpolation(interpolation_);
     for (int t = 0; t < num_spline_points; t++) {
       absl::Span<const double> values =
-          absl::MakeConstSpan(parameters_scratch.data() + t * model->nu,
-                              parameters_scratch.data() + (t + 1) * model->nu);
+          absl::MakeConstSpan(parameters_scratch.data() + t * 3, // 3 actuators
+                              parameters_scratch.data() + (t + 1) * 3); // 3 actuators
       policy.plan.AddNode(times_scratch[t], values);
     }
   }
@@ -335,7 +335,7 @@ void ReplaceCEMPlanner::ResamplePolicy(int horizon) {
   // get spline points
   for (int t = 0; t < num_spline_points; t++) {
     times_scratch[t] = nominal_time;
-    resampled_policy.Action(DataAt(parameters_scratch, t * model->nu), nullptr,
+    resampled_policy.Action(DataAt(parameters_scratch, t * 3), nullptr, // change to 3 actuators
                             nominal_time);
     nominal_time += time_shift;
   }
@@ -344,8 +344,8 @@ void ReplaceCEMPlanner::ResamplePolicy(int horizon) {
   resampled_policy.plan.Clear();
   for (int t = 0; t < num_spline_points; t++) {
     absl::Span<const double> values =
-        absl::MakeConstSpan(parameters_scratch.data() + t * model->nu,
-                            parameters_scratch.data() + (t + 1) * model->nu);
+        absl::MakeConstSpan(parameters_scratch.data() + t * 3,  // 3 actuators only
+                            parameters_scratch.data() + (t + 1) * 3); // 3 actuators only
     resampled_policy.plan.AddNode(times_scratch[t], values);
   }
   resampled_policy.plan.SetInterpolation(policy.plan.Interpolation());
@@ -358,13 +358,13 @@ void ReplaceCEMPlanner::AddNoiseToPolicy(int i, double std_min) {
 
   // dimensions
   int num_spline_points = candidate_policy[i].num_spline_points;
-  int num_parameters = num_spline_points * model->nu;
+  int num_parameters = num_spline_points * 3; // model->nu; // 3 actuators only
 
   // sampling token
   absl::BitGen gen_;
 
   // shift index
-  int shift = i * (model->nu * kMaxTrajectoryHorizon);
+  int shift = i * (3 * kMaxTrajectoryHorizon); // 3 actuators only
 
   // sample noise
   // variance[k] is the standard deviation for the k^th control parameter over
@@ -378,10 +378,16 @@ void ReplaceCEMPlanner::AddNoiseToPolicy(int i, double std_min) {
   for (int k = 0; k < candidate_policy[i].plan.Size(); k++) {
     TimeSpline::Node n = candidate_policy[i].plan.NodeAt(k);
     // add noise
-    mju_addTo(n.values().data(), DataAt(noise, shift + k * model->nu),
-              model->nu);
+    mju_addTo(n.values().data(), DataAt(noise, shift + k * 3), // 3 actuators
+              3);         // 3 actuators
     // clamp parameters
-    Clamp(n.values().data(), model->actuator_ctrlrange, model->nu);
+    //Clamp(n.values().data(), model->actuator_ctrlrange, model->nu);
+    // Clamp only the first 3 actuators
+    for (int k = 0; k < 3; k++) {
+      n.values()[k] = mju_clip(n.values()[k], 
+                                 model->actuator_ctrlrange[2 * k],
+                                 model->actuator_ctrlrange[2 * k + 1]);
+    }
   }
 
   // end timer
