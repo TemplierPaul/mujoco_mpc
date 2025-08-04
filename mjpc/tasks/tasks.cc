@@ -41,6 +41,8 @@
 #include "mjpc/tasks/swimmer/swimmer.h"
 #include "mjpc/tasks/walker/walker.h"
 #include "mjpc/tasks/plsim_crane/plsim_crane.h"
+#include "mjpc/tasks/plsim_double_crane/plsim_double_crane.h"
+#include "mjpc/tasks/moving_crane/moving_crane.h"
 #include "mjpc/tasks/ic_single_crane/ic_single_crane.h"
 
 namespace mjpc {
@@ -72,6 +74,8 @@ std::vector<std::shared_ptr<Task>> GetTasks() {
       std::make_shared<Swimmer>(),
       std::make_shared<Walker>(),
       std::make_shared<PLSim_Crane>(),
+      std::make_shared<PLSim_Double_Crane>(),
+      std::make_shared<Moving_Crane>(),
       std::make_shared<IC_Single_Crane>(),
   };
 }

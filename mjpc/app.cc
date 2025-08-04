@@ -51,7 +51,7 @@ ABSL_FLAG(bool, show_plot, false,
           "If true, the plots will be visible on startup");
 ABSL_FLAG(bool, show_info, true,
           "If true, the infotext panel will be visible on startup");
-ABSL_FLAG(bool, modify_state, false,
+ABSL_FLAG(bool, modify_state, true,
           "If true, the state of the sim will be modified at the end of the physics loop");
 
 namespace {

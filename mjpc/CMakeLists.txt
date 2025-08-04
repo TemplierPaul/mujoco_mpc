@@ -86,6 +86,10 @@ add_library(
   tasks/walker/walker.h
   tasks/plsim_crane/plsim_crane.cc
   tasks/plsim_crane/plsim_crane.h
+  tasks/plsim_double_crane/plsim_double_crane.cc
+  tasks/plsim_double_crane/plsim_double_crane.h
+  tasks/moving_crane/moving_crane.cc
+  tasks/moving_crane/moving_crane.h
   tasks/ic_single_crane/ic_single_crane.cc
   tasks/ic_single_crane/ic_single_crane.h
   planners/planner.cc

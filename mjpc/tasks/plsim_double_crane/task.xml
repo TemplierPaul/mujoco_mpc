@@ -1,6 +1,6 @@
-<mujoco model="PLSim Crane">
+<mujoco model="PLSim Double Crane">
   <include file="../common.xml"/>
-  <include file="optimized_physical.xml" />
+  <include file="optimized_physical_double.xml" />
 
   <!-- set userdata =model.nv+model.nq for storeing qpos and qvel from ROS-->
   <!-- add three more userdata for payload tip x, y z acc, i.e. 14+3 -->
@@ -51,10 +51,10 @@
 
   <sensor>
     <!-- cost -->
-    <user name="Distance" dim="1" user="2 500 0 5000 0.04" /> <!-- tested on mp-->
+    <user name="Distance" dim="1" user="2 1000 0 5000 0.04" /> <!-- tested on mp-->
     <user name="Sway_Angle" dim="1" user="2 6000 500 10000 0.04"/>
      <user name="KE" dim="1" user="2 0 0 100 0.04"/>
-    <user name="Control" dim="2" user="0 100 0.0 500.0"/>  
+    <user name="Control" dim="2" user="0 200 0.0 500.0"/>  
 
     <!-- estimator sensor-->
     <jointpos name="4" joint="hoist-slider"/>
